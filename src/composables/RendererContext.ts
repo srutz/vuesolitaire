@@ -82,21 +82,3 @@ export const RendererContextTag = Symbol('RendererContextTag') as InjectionKey<R
 
 export type ClickHandler = (pile: Pile, card?: PlayingCard) => void
 
-
-/*
-export type Size = {
-    width: number
-    height: number
-}
-
-export type RendererContextType = {
-    draggedCard?: PlayingCard
-    allDraggedCards: PlayingCard[]
-    dragPosition?: { x: number, y: number }
-    destinationPile?: Pile
-    geometry: Geometry
-    availableSize: Size
-}
-
-export const RendererContext = Symbol('RendererContext') as InjectionKey<RendererContextType>
-*/

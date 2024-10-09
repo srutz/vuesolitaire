@@ -1,6 +1,6 @@
 import { onMounted, onUnmounted, Ref, ref } from "vue"
 
-
+/* Composable that tracks the size of an element */
 export function useElementSize(element: Ref<HTMLElement | null>) {
     const width = ref(0)
     const height = ref(0)

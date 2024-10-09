@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref, toRefs } from "vue"
 
 export type WindowSize = { width: number, height: number }
 
+/* Composable that tracks the window size */
 export function useWindowSize() {
     const size = ref<WindowSize>({ width: -1, height: -1 })
     onMounted(() => {

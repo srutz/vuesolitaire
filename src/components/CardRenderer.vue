@@ -54,7 +54,6 @@ const style = computed(() => {
     const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
     const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
     const dragIndex = GameUtil.indexOfCard(allDraggedCards.value, card)
-    console.log(dragIndex, reactiveCard, reactivePile)
     if (status == "stopped" || status == "won") {
         position = { x: -300, y: -300 }
     } else if (dragIndex == -1) {
