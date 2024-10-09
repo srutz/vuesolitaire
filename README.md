@@ -35,4 +35,4 @@ cat cards.json > jq '.cards[].image' |sort | sed -e 's/.png$/.svg/' | while read
 
 Cards.json was obtained from https://deckofcardsapi.com.
 
-
+ 
