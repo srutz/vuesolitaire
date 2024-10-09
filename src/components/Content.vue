@@ -25,7 +25,7 @@ const gameContext = inject(GameContextTag)!
 
 const handleMenubarAction = (action: string) => {
     if ("about" == action) {
-        //setAboutShown(true)
+        aboutShown = true
     } else if ("game-new" == action) {
         if (gameContext.state.value.status == "running") {
             //setNewGameConfirmShown(true)
@@ -47,7 +47,7 @@ const startNewGame = () => {
     gameContext.dispatch({ type: "game-new" })
     setTimeout(() => {
         gameContext.dispatch({ type: "game-launched" })
-    }, 10_000)
+    }, 1_000)
 }
 
 

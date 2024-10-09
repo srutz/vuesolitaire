@@ -6,7 +6,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, CSSProperties, inject, onMounted, onUnmounted, ref } from 'vue';
+import { computed, CSSProperties, inject, ref, watchEffect } from 'vue';
 import { GameContextTag } from '../composables/GameContext';
 import { getPilePosition, getStackingDistance, RendererContextTag } from '../composables/RendererContext';
 import { Pile, PlayingCard } from '../game/GameTypes';
@@ -14,8 +14,8 @@ import { GameUtil } from '../game/GameUtil';
 
 
 const computePosition = (pile: Pile, card: PlayingCard, cardIndex: number) => {
-    const index = GameUtil.indexOfCard(allDraggedCards.value, card)
     const position = getPilePosition(availableSize.value, geometry.value, pile)
+    const index = GameUtil.indexOfCard(allDraggedCards.value, card)
     if (index == -1) {
         position.y = position.y + cardIndex * getStackingDistance(geometry.value.scale, pile.type)
     } else {
@@ -41,72 +41,69 @@ const gameContext = inject(GameContextTag)!
 const rendererContext = inject(RendererContextTag)!
 const { draggedCard, allDraggedCards, geometry, dragPosition, availableSize } = rendererContext
 
+
 const dragged = computed(() => GameUtil.hasCard(allDraggedCards.value, card))
 const width = computed(() => geometry.value.cardWidth)
-const duration = computed(() => {
-    const d = ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 ? 750 : undefined
-    //console.log("duration", d, gameContext.state.value.status, GameUtil.cardId(card))
-    return 750
-})
-const delay = computed(() => {
+const releasingDrag = ref(false)
+
+
+const style = computed(() => {
+    let position = { x: 0, y: 0 }
+    const status = gameContext.state.value.status
     const reactiveCard = GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!
     const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
     const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
-    return ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 
+    const dragIndex = GameUtil.indexOfCard(allDraggedCards.value, card)
+    console.log(dragIndex, reactiveCard, reactivePile)
+    if (status == "stopped" || status == "won") {
+        position = { x: -300, y: -300 }
+    } else if (dragIndex == -1) {
+        position = getPilePosition(availableSize.value, geometry.value, reactivePile)
+        position.y = position.y + cardIndex * getStackingDistance(geometry.value.scale, reactivePile.type)
+    } else {
+        position.x = dragPosition.value.x || 0
+        position.y  = (dragPosition.value.y || 0) + dragIndex * getStackingDistance(geometry.value.scale, reactivePile.type)
+    }
+
+    const duration = ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 ? 750 : undefined
+    const delay = ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 
         ? Math.floor(cardIndex * 250 / reactivePile.cards.length)
         : undefined
-})
-const position2 = computed(() => {
-    gameContext.state.value
-    availableSize.value
-    dragPosition.value
-    draggedCard.value
-    allDraggedCards.value
-    const reactiveCard = (GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!)
-    const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
-    const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
-    const p = computePosition(reactivePile, reactiveCard, cardIndex)
-    console.log("position", GameUtil.ordinalNumber(card), p,  gameContext.state.value.status, cardIndex, GameUtil.cardId(card), reactivePile.type)
-    return p
-})
-const zIndex = computed(() => GameUtil.hasCard(allDraggedCards.value, card) ? DRAG_LAYER : undefined)
-// todo:
-const releasingDrag = ref(false)
 
-const position = computed(() => {
-    if (gameContext.state.value.status == "stopped") {
-        return { x: -300, y: -300 }
-    }
-    const reactiveCard = (GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!)
-    const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
-    const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
-    const position = getPilePosition(availableSize.value, geometry.value, reactivePile)
-    position.y = position.y + cardIndex * getStackingDistance(geometry.value.scale, reactivePile.type)
-    return position
-})  
+    const zIndex = GameUtil.hasCard(allDraggedCards.value, card) ? DRAG_LAYER + cardIndex : 10 + cardIndex
 
-const style = computed(() => {
     const style: CSSProperties = {
         width: width.value + "px",
         transitionProperty: "all",
-        transitionDuration: (duration.value ?? 0) + "ms",
-        transitionDelay: (delay.value ?? 0)+ "ms",
-        left: position.value.x !== undefined ? position.value.x + "px" : "auto",
-        top: position.value.y !== undefined ? position.value.y + "px" : "auto",
-        zIndex: zIndex.value || "2"
+        transitionDuration: (duration ?? 0) + "ms",
+        transitionDelay: (delay ?? 0)+ "ms",
+        left: position.x !== undefined ? position.x + "px" : "auto",
+        top: position.y !== undefined ? position.y + "px" : "auto",
+        zIndex: zIndex
     }
-    if (!dragged.value) {
+    // if not dragged animate always
+    if (dragged.value) {
+        style.transitionProperty = "none"
+    } else {
         style.transitionProperty = "all"
         style.transitionDuration = "125ms"
         style.transitionTimingFunction = "ease-out"
     }
     if (releasingDrag.value) {
-        style.zIndex = DRAG_LAYER
-        //style.animation = "bounce 150ms ease-in-out"
+        style.zIndex = DRAG_LAYER + cardIndex
+        style.animation = "bounce 150ms ease-in-out"
     }
-    style.transitionDuration = "125ms"
-    style.transitionDelay = "500ms"
     return style
+})
+
+watchEffect(() => {
+    //console.log("change " + GameUtil.cardToString(card) + " " + dragged)
+    if (!dragged.value) {
+        setTimeout(() => {
+            releasingDrag.value = false
+        }, 150)
+        releasingDrag.value = true
+    }
 })
 
 const clazzes = computed(() => {
@@ -120,12 +117,6 @@ const image = computed(() => {
     return reactiveCard.side == "back" ? "cards/back.png" : GameUtil.cardToImage(reactiveCard)
 })
 
-onMounted(() => {
-    console.log("mounted: " + GameUtil.cardToString(card))
-})
 
-onUnmounted(() => {
-    console.log("unmounted: " + GameUtil.cardToString(card))
-})
 
 </script>
