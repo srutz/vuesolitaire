@@ -12,8 +12,18 @@
             <PileRenderer :pile="stock" :clickHandler="clickHandler" />
             <PileRenderer :pile="waste" :clickHandler="clickHandler" />
             <PileRenderer v-for="(pile,i) in stacks":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
-            <PileRenderer v-for="(pile,i) in tables":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
+            <PileRenderer v-for="(pile,i) in tables":key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
         </div>
+        <div class="relative bottom-0 flex flex-col gap-4">
+            <TPileRenderer :pile="stock" :clickHandler="clickHandler" />
+            <TPileRenderer :pile="waste" :clickHandler="clickHandler" />
+            <TPileRenderer v-for="(pile,i) in stacks":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
+            <TPileRenderer v-for="(pile,i) in tables":key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
+            <div class="flex text-white">
+                <div>{{ gameContext.state.value.status }}</div><button class="button" @click="debugaction">Move Away</button>
+            </div>
+        </div>
+
     </div>
 </template>
 <script setup lang="ts">
@@ -22,6 +32,7 @@ import { GameContextTag } from '../composables/GameContext';
 import { ClickHandler, RendererContextTag, useRendererContext } from '../composables/RendererContext';
 import { GameUtil } from '../game/GameUtil';
 import PileRenderer from './PileRenderer.vue';
+import TPileRenderer from './TPileRenderer.vue';
 
 
 /* setup renderer context */
@@ -33,8 +44,7 @@ provide(RendererContextTag, rendererContext)
 const gameContext = inject(GameContextTag)!
 const { stock, waste, stacks, tables } = toRefs(gameContext.state.value)
 
-
-
+/* game clicks */
 const clickHandler: ClickHandler = (pile, card) => {
     if (card && pile.type === "stock") {
         gameContext.dispatch({ type: "draw-stock", card: card })
@@ -47,7 +57,7 @@ const clickHandler: ClickHandler = (pile, card) => {
     }    
 }
 
-/* there the drag and drop logic starts */
+/* game drag and drop logic starts */
 
 const dragging = ref(false)
 const downPosition = ref({ x: 0, y: 0 })
@@ -147,5 +157,9 @@ const endDrag = () => {
     destinationPile.value = undefined
 }
 
+const debugaction = () => {
+    const allCards = GameUtil.getAllCards(gameContext.state.value)
+
+}
 
 </script>

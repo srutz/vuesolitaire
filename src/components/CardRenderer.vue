@@ -6,7 +6,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, CSSProperties, inject, ref } from 'vue';
+import { computed, CSSProperties, inject, onMounted, onUnmounted, ref } from 'vue';
 import { GameContextTag } from '../composables/GameContext';
 import { getPilePosition, getStackingDistance, RendererContextTag } from '../composables/RendererContext';
 import { Pile, PlayingCard } from '../game/GameTypes';
@@ -47,16 +47,27 @@ const dragged = computed(() => GameUtil.hasCard(allDraggedCards.value, card))
 const width = computed(() => geometry.value.cardWidth)
 const duration = computed(() => ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 ? 750 : undefined)
 const delay = computed(() => {
-    const reactiveCard = (GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!)
+    const reactiveCard = GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!
     const reactivePile = GameUtil.findPileById(gameContext.state.value, GameUtil.pileId(pile))!
     // todo
     const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
+    if (cardIndex == -1 && pile.type == "table" && pile.index == 1) {
+        const txt = reactivePile.cards.map(c => GameUtil.cardId(c)).join(",")
+        console.log("reactive pile cards: ", txt)
+        console.log("regular  pile cards: ", pile.cards.map(c => GameUtil.cardId(c)).join(","))
+        console.log("reactive card: " + GameUtil.cardId(reactiveCard))
+        console.log("regular card: " + GameUtil.cardId(card))
+        console.log("indexcompare", GameUtil.pileId(reactivePile), GameUtil.pileId(pile), GameUtil.cardId(reactiveCard), GameUtil.cardId(card), cardIndex, index)
+        const i2 = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
+        debugger
+
+    }
     return ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 
-        ? Math.floor(index * 250 / reactivePile.cards.length)
+        ? Math.floor((reactivePile.cards.length -cardIndex) * 250 / reactivePile.cards.length)
         : undefined
 })
 const position = computed(() => {
-    //gameContext.state.value
+    gameContext.state.value
     availableSize.value
     dragPosition.value
     draggedCard.value
@@ -78,7 +89,7 @@ const style = computed(() => {
         transitionDelay: (delay.value ?? 0)+ "ms",
         left: position.value.x !== undefined ? position.value.x + "px" : "auto",
         top: position.value.y !== undefined ? position.value.y + "px" : "auto",
-        zIndex: zIndex.value || "auto"
+        zIndex: zIndex.value || "2"
     }
     if (!dragged.value) {
         style.transitionProperty = "all"
@@ -89,6 +100,8 @@ const style = computed(() => {
         style.zIndex = DRAG_LAYER
         style.animation = "bounce 150ms ease-in-out"
     }
+    //style.transitionDuration = "1125ms"
+    //style.transitionDelay = "500ms"
     return style
 })
 
@@ -103,5 +116,12 @@ const image = computed(() => {
     return reactiveCard.side == "back" ? "cards/back.png" : GameUtil.cardToImage(reactiveCard)
 })
 
+onMounted(() => {
+    //console.log("mounted: " + GameUtil.cardToString(card))
+})
+
+onUnmounted(() => {
+    //console.log("unmounted: " + GameUtil.cardToString(card))
+})
 
 </script>

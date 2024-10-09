@@ -2,13 +2,16 @@
 import { Pile, PlayingCard, SolitaireState, Suit, SuitColor } from "./GameTypes"
 
 
+/* Return type for findClosestPileAndCard */
 export type PileInfo = {
     pile: Pile,
     elem: HTMLElement,
     card?: PlayingCard
 }
 
-
+/* utility functions for the game 
+ * mostly for finding and manipulating cards and piles by id,
+ */
 export class GameUtil {
 
     static shortSuit(suit: Suit) {
@@ -137,6 +140,10 @@ export class GameUtil {
         return cards.findIndex(c => GameUtil.cardId(c) == GameUtil.cardId(card)) != -1
     }
 
+    static hasCardById(cards: PlayingCard[], cardId: string) {
+        return cards.findIndex(c => GameUtil.cardId(c) == cardId) != -1
+    }
+
     static findPileForCard(state?: SolitaireState, card?: PlayingCard) {
         if (!state || !card) {
             return undefined
@@ -178,6 +185,9 @@ export class GameUtil {
         return Math.sqrt(dx * dx + dy * dy)
     }
 
+    /* find the closest pile to the target element
+     * target is the element being dragged around
+     */
     static findClosestPile(state: SolitaireState, container: HTMLDivElement, target: HTMLElement): PileInfo | undefined {
         //console.log("dragrect: " + dragrect.left + " " + dragrect.top + " " + dragrect.right + " " + dragrect.bottom)
         const dragrect = target.getBoundingClientRect()
@@ -205,6 +215,9 @@ export class GameUtil {
         return candidate
     }
 
+    /* find the closest pile and Card to the target element
+     * target is the element being dragged around
+     */
     static findClosestPileAndCard(state: SolitaireState, container: HTMLDivElement, target: HTMLElement, draggedCard?: PlayingCard) : PileInfo | undefined {
         //console.log("dragrect: " + dragrect.left + " " + dragrect.top + " " + dragrect.right + " " + dragrect.bottom)
         const dragrect = target.getBoundingClientRect()
@@ -252,6 +265,9 @@ export class GameUtil {
         return candidate
     }
 
+    /* if you drag a card from a table pile you drag along all the cards on top of it 
+     * (top means vertically below)
+     */
     static computeAllDraggedCards(state: SolitaireState, card: PlayingCard) {
         if (!card) {
             return []
@@ -270,6 +286,11 @@ export class GameUtil {
         }
         return r
     }
-    
+
+    static getAllCards(state: SolitaireState) {
+        return state.stock.cards.concat(state.waste.cards).concat(
+            state.stacks.flatMap(p => p.cards)).concat(
+            state.tables.flatMap(p => p.cards))
+    }
 
 }

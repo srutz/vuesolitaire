@@ -100,7 +100,7 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
             return s
         }
         case "game-stop": {
-            const s = makeInitialState()
+            const s = { ...state }
             s.status = "stopped"
             return s
         }

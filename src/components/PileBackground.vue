@@ -11,7 +11,6 @@ import { getPilePosition, RendererContextTag } from '../composables/RendererCont
 import { Pile } from '../game/GameTypes';
 import { GameUtil } from '../game/GameUtil';
 
-
 const { pile } = defineProps<{
     pile: Pile,
 }>()
@@ -19,6 +18,7 @@ const { pile } = defineProps<{
 const rendererContext = inject(RendererContextTag)!
 const { geometry, availableSize } = rendererContext
 
+/* show a label on the background for some piles */
 const label = ["table", "waste"].indexOf(pile.type) == -1 ? pile.type : ""
 
 const pileId = GameUtil.pileId(pile)
