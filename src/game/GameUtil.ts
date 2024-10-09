@@ -1,5 +1,5 @@
 /* (c) Stepan Rutz 2024. All rights reserved. License under the WTFPL */
-import { Pile, PlayingCard, SolitaireState, Suit, SuitColor } from "./GameTypes"
+import { Pile, PlayingCard, Rank, SolitaireState, Suit, SuitColor } from "./GameTypes"
 
 
 /* Return type for findClosestPileAndCard */
@@ -13,6 +13,26 @@ export type PileInfo = {
  * mostly for finding and manipulating cards and piles by id,
  */
 export class GameUtil {
+
+    static ordinalNumber(card: PlayingCard) {
+        /* helper to convert suit to index */
+        function suitToIndex(suit: Suit) {
+            switch (suit) {
+                case "clubs": return 0
+                case "spades": return 1
+                case "hearts": return 2
+                case "diamonds": return 3
+            }
+        }
+
+        /* helper to convert rank to index */
+        function rankToIndex(rank: Rank) {
+            const a = rank == "10" ? "0" : rank
+            return "A234567890JQK".indexOf(a)
+        }
+        return suitToIndex(card.suit) * 13 + rankToIndex(card.rank)
+    }
+
 
     static shortSuit(suit: Suit) {
         switch (suit) {
@@ -31,15 +51,15 @@ export class GameUtil {
             case "spades": return "black"
         }
     }
-    
+
     static cardToString(card?: PlayingCard) {
         return card && `${GameUtil.shortSuit(card.suit)}-${card.rank}`
     }
-    
+
     static cardId(card: PlayingCard) {
         return `${card.suit.substring(0, 1)}_${card.rank}`
     }
-    
+
     static cardToImage(card: PlayingCard) {
         let rank = card.rank as string;
         if (rank === "10") rank = "0"
@@ -131,7 +151,7 @@ export class GameUtil {
         }
         return undefined
     }
-    
+
     static pileHasCard(pile: Pile, card: PlayingCard) {
         return pile.cards.findIndex(c => GameUtil.cardId(c) == GameUtil.cardId(card)) != -1
     }
@@ -169,8 +189,8 @@ export class GameUtil {
 
     static intersectRect(r1: DOMRect, r2: DOMRect) {
         return !(
-            r2.left > r1.right || 
-            r2.right < r1.left || 
+            r2.left > r1.right ||
+            r2.right < r1.left ||
             r2.top > r1.bottom ||
             r2.bottom < r1.top)
     }
@@ -191,7 +211,7 @@ export class GameUtil {
     static findClosestPile(state: SolitaireState, container: HTMLDivElement, target: HTMLElement): PileInfo | undefined {
         //console.log("dragrect: " + dragrect.left + " " + dragrect.top + " " + dragrect.right + " " + dragrect.bottom)
         const dragrect = target.getBoundingClientRect()
-        let candidate: PileInfo | undefined =  undefined
+        let candidate: PileInfo | undefined = undefined
         let dist = Number.MAX_VALUE
         container.querySelectorAll("[data-pile]").forEach(e => {
             if (!(e instanceof HTMLElement)) {
@@ -218,10 +238,10 @@ export class GameUtil {
     /* find the closest pile and Card to the target element
      * target is the element being dragged around
      */
-    static findClosestPileAndCard(state: SolitaireState, container: HTMLDivElement, target: HTMLElement, draggedCard?: PlayingCard) : PileInfo | undefined {
+    static findClosestPileAndCard(state: SolitaireState, container: HTMLDivElement, target: HTMLElement, draggedCard?: PlayingCard): PileInfo | undefined {
         //console.log("dragrect: " + dragrect.left + " " + dragrect.top + " " + dragrect.right + " " + dragrect.bottom)
         const dragrect = target.getBoundingClientRect()
-        let candidate: PileInfo | undefined =  undefined
+        let candidate: PileInfo | undefined = undefined
         let dist = Number.MAX_VALUE
         container.querySelectorAll("[data-card]").forEach(e => {
             if (!(e instanceof HTMLElement)) {
@@ -253,7 +273,7 @@ export class GameUtil {
                 const currdist = GameUtil.distanceBetweenCenters(dragrect, cardrect)
                 if (currdist < dist) {
                     dist = currdist
-                    if (cardPile) { 
+                    if (cardPile) {
                         candidate = { pile: cardPile, elem, card }
                     }
                 }
@@ -290,7 +310,7 @@ export class GameUtil {
     static getAllCards(state: SolitaireState) {
         return state.stock.cards.concat(state.waste.cards).concat(
             state.stacks.flatMap(p => p.cards)).concat(
-            state.tables.flatMap(p => p.cards))
+                state.tables.flatMap(p => p.cards))
     }
 
 }

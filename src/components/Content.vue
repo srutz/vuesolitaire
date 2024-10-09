@@ -47,7 +47,7 @@ const startNewGame = () => {
     gameContext.dispatch({ type: "game-new" })
     setTimeout(() => {
         gameContext.dispatch({ type: "game-launched" })
-    }, 1_000)
+    }, 10_000)
 }
 
 

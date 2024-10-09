@@ -2,17 +2,16 @@
     <div class="text-white">{{ content }}</div>
 </template>
 <script setup lang="ts">
-import { computed, inject, toRaw } from 'vue';
+import { computed, inject } from 'vue';
 import { GameContextTag } from '../composables/GameContext';
 import { ClickHandler } from '../composables/RendererContext';
-import { Pile, PlayingCard } from '../game/GameTypes';
+import { Pile } from '../game/GameTypes';
 import { GameUtil } from '../game/GameUtil';
 
 const { pile, clickHandler } = defineProps<{
     pile: Pile,
     clickHandler: ClickHandler
 }>()
-const handleClick = (card?: PlayingCard) => clickHandler(toRaw(pile), toRaw(card))
 
 /* get the current set of cards from the gamecontext */
 const gameContext = inject(GameContextTag)!

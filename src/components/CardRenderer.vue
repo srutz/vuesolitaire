@@ -33,11 +33,9 @@ const computePosition = (pile: Pile, card: PlayingCard, cardIndex: number) => {
 const DRAG_LAYER = 1000
 
 const props = defineProps<{
-    pile: Pile,
     card: PlayingCard,
-    index: number,
 }>()
-const { pile, card, index } = props
+const { card } = props
 
 const gameContext = inject(GameContextTag)!
 const rendererContext = inject(RendererContextTag)!
@@ -45,41 +43,47 @@ const { draggedCard, allDraggedCards, geometry, dragPosition, availableSize } = 
 
 const dragged = computed(() => GameUtil.hasCard(allDraggedCards.value, card))
 const width = computed(() => geometry.value.cardWidth)
-const duration = computed(() => ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 ? 750 : undefined)
+const duration = computed(() => {
+    const d = ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 ? 750 : undefined
+    //console.log("duration", d, gameContext.state.value.status, GameUtil.cardId(card))
+    return 750
+})
 const delay = computed(() => {
     const reactiveCard = GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!
-    const reactivePile = GameUtil.findPileById(gameContext.state.value, GameUtil.pileId(pile))!
-    // todo
+    const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
     const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
-    if (cardIndex == -1 && pile.type == "table" && pile.index == 1) {
-        const txt = reactivePile.cards.map(c => GameUtil.cardId(c)).join(",")
-        console.log("reactive pile cards: ", txt)
-        console.log("regular  pile cards: ", pile.cards.map(c => GameUtil.cardId(c)).join(","))
-        console.log("reactive card: " + GameUtil.cardId(reactiveCard))
-        console.log("regular card: " + GameUtil.cardId(card))
-        console.log("indexcompare", GameUtil.pileId(reactivePile), GameUtil.pileId(pile), GameUtil.cardId(reactiveCard), GameUtil.cardId(card), cardIndex, index)
-        const i2 = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
-        debugger
-
-    }
     return ["stopped", "won", "launching"].indexOf(gameContext.state.value.status || "") != -1 
-        ? Math.floor((reactivePile.cards.length -cardIndex) * 250 / reactivePile.cards.length)
+        ? Math.floor(cardIndex * 250 / reactivePile.cards.length)
         : undefined
 })
-const position = computed(() => {
+const position2 = computed(() => {
     gameContext.state.value
     availableSize.value
     dragPosition.value
     draggedCard.value
     allDraggedCards.value
     const reactiveCard = (GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!)
-    const reactivePile = GameUtil.findPileById(gameContext.state.value, GameUtil.pileId(pile))!
+    const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
     const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
-    return computePosition(pile, reactiveCard, cardIndex)
+    const p = computePosition(reactivePile, reactiveCard, cardIndex)
+    console.log("position", GameUtil.ordinalNumber(card), p,  gameContext.state.value.status, cardIndex, GameUtil.cardId(card), reactivePile.type)
+    return p
 })
 const zIndex = computed(() => GameUtil.hasCard(allDraggedCards.value, card) ? DRAG_LAYER : undefined)
 // todo:
 const releasingDrag = ref(false)
+
+const position = computed(() => {
+    if (gameContext.state.value.status == "stopped") {
+        return { x: -300, y: -300 }
+    }
+    const reactiveCard = (GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!)
+    const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
+    const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
+    const position = getPilePosition(availableSize.value, geometry.value, reactivePile)
+    position.y = position.y + cardIndex * getStackingDistance(geometry.value.scale, reactivePile.type)
+    return position
+})  
 
 const style = computed(() => {
     const style: CSSProperties = {
@@ -98,10 +102,10 @@ const style = computed(() => {
     }
     if (releasingDrag.value) {
         style.zIndex = DRAG_LAYER
-        style.animation = "bounce 150ms ease-in-out"
+        //style.animation = "bounce 150ms ease-in-out"
     }
-    //style.transitionDuration = "1125ms"
-    //style.transitionDelay = "500ms"
+    style.transitionDuration = "125ms"
+    style.transitionDelay = "500ms"
     return style
 })
 
@@ -117,11 +121,11 @@ const image = computed(() => {
 })
 
 onMounted(() => {
-    //console.log("mounted: " + GameUtil.cardToString(card))
+    console.log("mounted: " + GameUtil.cardToString(card))
 })
 
 onUnmounted(() => {
-    //console.log("unmounted: " + GameUtil.cardToString(card))
+    console.log("unmounted: " + GameUtil.cardToString(card))
 })
 
 </script>

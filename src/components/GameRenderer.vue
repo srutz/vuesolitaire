@@ -13,24 +13,34 @@
             <PileRenderer :pile="waste" :clickHandler="clickHandler" />
             <PileRenderer v-for="(pile,i) in stacks":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
             <PileRenderer v-for="(pile,i) in tables":key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
+
+            <CardRenderer v-for="(card,i) in cards"
+                :key="GameUtil.cardId(card)" 
+                :pile="getPile(card)!"
+                :card="card"
+                :title="gameContext.state.value.status"
+                :data-card="GameUtil.cardId(card)"
+                @click="clickHandler(getPile(card)!,card)">
+            </CardRenderer>
+
+
         </div>
-        <div class="relative bottom-0 flex flex-col gap-4">
+        <div v-if="false" class="relative bottom-0 flex flex-col gap-4">0
             <TPileRenderer :pile="stock" :clickHandler="clickHandler" />
             <TPileRenderer :pile="waste" :clickHandler="clickHandler" />
             <TPileRenderer v-for="(pile,i) in stacks":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
             <TPileRenderer v-for="(pile,i) in tables":key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
-            <div class="flex text-white">
-                <div>{{ gameContext.state.value.status }}</div><button class="button" @click="debugaction">Move Away</button>
-            </div>
         </div>
 
     </div>
 </template>
 <script setup lang="ts">
-import { inject, provide, ref, toRefs, useTemplateRef } from 'vue';
+import { computed, inject, provide, ref, toRefs, useTemplateRef } from 'vue';
 import { GameContextTag } from '../composables/GameContext';
 import { ClickHandler, RendererContextTag, useRendererContext } from '../composables/RendererContext';
+import { PlayingCard } from '../game/GameTypes';
 import { GameUtil } from '../game/GameUtil';
+import CardRenderer from './CardRenderer.vue';
 import PileRenderer from './PileRenderer.vue';
 import TPileRenderer from './TPileRenderer.vue';
 
@@ -157,9 +167,19 @@ const endDrag = () => {
     destinationPile.value = undefined
 }
 
-const debugaction = () => {
-    const allCards = GameUtil.getAllCards(gameContext.state.value)
 
-}
+/* card rendering */
+const getPile = (card: PlayingCard) => GameUtil.findPileForCard(gameContext.state.value, card)
+
+const cards = computed(() => {
+    const c = GameUtil.getAllCards(gameContext.state.value)
+    /*
+    console.log("cards count", c.length)
+    for (let card of c) {
+        console.log("card: " + GameUtil.pileId(getPile(card)!) + ", " + GameUtil.cardId(card))
+    }
+    */
+    return c
+})
 
 </script>
