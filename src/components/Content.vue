@@ -20,7 +20,7 @@
                 <p>Card-Images are are from <ExternalLink href="https://deckofcardsapi.com/"/></p>
                 <p>Made with: Typescript, Vue, Vite, Tailwind</p>
                 <div class="flex flex-col bg-black p-4 self-strecth items-center relative min-h-64">
-                    <div v-for="(card,index) in aboutCards" :key="index" class="w-32 absolute" _style="getAboutStyle(index)">
+                    <div v-for="(card,index) in aboutCards" :key="index" class="w-32 absolute" :style="getAboutStyle(index)">
                         <img draggable="false" class="select-none " :src="'cards/' + card + '.svg'" />
                     </div>
                 </div>

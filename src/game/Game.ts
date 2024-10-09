@@ -225,6 +225,7 @@ function data2urlsafe(bytes: Uint8Array) {
 }
 
 /* convert a url-safe string to a byte array */
+/*
 function urlsafe2data(base64String: string) {
     base64String = base64String.replace(/-/g, '+').replace(/_/g, '/')
     while (base64String.length % 4) {
@@ -237,6 +238,7 @@ function urlsafe2data(base64String: string) {
     }
     return bytes
 }
+*/
 
 /* take the solitaire state and convert it to a url-safe string */
 export function stateToExternalForm(s: SolitaireState) {

@@ -9,26 +9,10 @@
 import { computed, CSSProperties, inject, ref, watchEffect } from 'vue';
 import { GameContextTag } from '../composables/GameContext';
 import { getPilePosition, getStackingDistance, RendererContextTag } from '../composables/RendererContext';
-import { Pile, PlayingCard } from '../game/GameTypes';
+import { PlayingCard } from '../game/GameTypes';
 import { GameUtil } from '../game/GameUtil';
 
 
-const computePosition = (pile: Pile, card: PlayingCard, cardIndex: number) => {
-    const position = getPilePosition(availableSize.value, geometry.value, pile)
-    const index = GameUtil.indexOfCard(allDraggedCards.value, card)
-    if (index == -1) {
-        position.y = position.y + cardIndex * getStackingDistance(geometry.value.scale, pile.type)
-    } else {
-        position.x = dragPosition.value.x || 0
-        position.y  = (dragPosition.value.y || 0) + index * getStackingDistance(geometry.value.scale, pile.type)
-    }
-    if (["stopped", "won"].indexOf(gameContext.state.value.status || "") != -1 ) {
-        position.x = -300
-        position.y = -300
-    }
-    //console.log("computePosition", gameContext.state.value.status, toRaw(card), toRaw(unref(availableSize)), position)
-    return position
-}
 
 const DRAG_LAYER = 1000
 
@@ -39,8 +23,7 @@ const { card } = props
 
 const gameContext = inject(GameContextTag)!
 const rendererContext = inject(RendererContextTag)!
-const { draggedCard, allDraggedCards, geometry, dragPosition, availableSize } = rendererContext
-
+const { allDraggedCards, geometry, dragPosition, availableSize } = rendererContext
 
 const dragged = computed(() => GameUtil.hasCard(allDraggedCards.value, card))
 const width = computed(() => geometry.value.cardWidth)
