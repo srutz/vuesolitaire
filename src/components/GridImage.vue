@@ -1,6 +1,6 @@
 <template>
     <div class="container" :style="styleContainer()">
-        <div v-for="(tile,i) in tiles" :key="tile.id" :data-id="tile.id" class="tile rounded-sm" :style="styleTile(tile)" ></div>
+        <div v-for="(tile) in tiles" :key="tile.id" :data-id="tile.id" class="tile rounded-sm" :style="styleTile(tile)" ></div>
     </div>
 </template>
 
