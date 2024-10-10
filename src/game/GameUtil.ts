@@ -64,7 +64,7 @@ export class GameUtil {
         let rank = card.rank as string;
         if (rank === "10") rank = "0"
         //return `https://deckofcardsapi.com/static/img/${rank.toUpperCase()}${card.suit[0].toUpperCase()}.png`
-        return `cards/${rank.toUpperCase()}${card.suit[0].toUpperCase()}.svg`
+        return `/vuesolitaire/cards/${rank.toUpperCase()}${card.suit[0].toUpperCase()}.svg`
     }
 
     static findCardElement(element: HTMLElement) {

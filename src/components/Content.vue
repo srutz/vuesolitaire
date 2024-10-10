@@ -10,17 +10,26 @@
                 taller browser window
             </div>
             <GameRenderer v-else ></GameRenderer>
+
+            <template v-if="gameContext.state.value.status == 'stopped'">
+                <div class="top-0 bottom-0 right-0 left-0 insets-0 absolute bg-black opacity-40 flex flex-col justify-center items-center" >
+                </div>
+                <div class="top-0 bottom-0 right-0 left-0 insets-0 absolute bg-transparent flex flex-col justify-center items-center" >
+                    <GridImage></GridImage>
+                </div>
+            </template>
         </div>
         <ModalDialog :show="aboutShown" :onClose="() => aboutShown = false" title="About Vue-Solitaire">
             <div class="flex flex-col gap-2">
                 <p>Small Solitair Game in Vue. Cards are just divs, no Canvas used.</p>
                 <p>by Stepan Rutz <a href="mailto:stepan.rutz@gmx.de">stepan.rutz AT gmx.de</a>.</p>
                 <p>Projectpage incl. sourcecode <ExternalLink href="https://github.com/srutz/vuesolitaire/">https://github.com/srutz/vuesolitaire/</ExternalLink>.</p>
-                <div class="h-4"></div>
+                <div class="h-2"></div>
                 <p>Card-Images are are from <ExternalLink href="https://deckofcardsapi.com/">https://deckofcardsapi.com/</ExternalLink></p>
+                <p>Stock Photos from <ExternalLink href="https://pexels.com/">https://pexels.com/</ExternalLink></p>
                 <p>Made with: Typescript, Vue, Vite, Tailwind</p>
                 <div class="flex flex-col bg-black p-4 self-strecth items-center relative min-h-64">
-                    <StyledImage v-for="(card,index) in aboutCards" :key="index" :imageSource="'cards/' + card + '.svg'" :style="getAboutStyle(index)">
+                    <StyledImage v-for="(card,index) in aboutCards" :key="index" :imageSource="'/vuesolitaire/cards/' + card + '.svg'" :style="getAboutStyle(index)">
                     </StyledImage>
                 </div>
             </div>
@@ -45,16 +54,17 @@
     </div>
 </template>
 <script setup lang="ts">
-import { CSSProperties, inject, onMounted, onUnmounted, ref } from 'vue';
-import GameRenderer from '../components/GameRenderer.vue';
-import Menubar from '../components/Menubar.vue';
-import { GameContextTag } from '../composables/GameContext';
-import { useWindowSize } from '../composables/WindowSize';
-import ConfirmDialog from './dialogs/ConfirmDialog.vue';
-import ExternalLink from './dialogs/ExternalLink.vue';
-import ModalDialog from './dialogs/ModalDialog.vue';
-import StyledImage from './StyledImage.vue';
+import { CSSProperties, inject, onMounted, onUnmounted, ref } from 'vue'
+import GameRenderer from '../components/GameRenderer.vue'
+import GridImage from '../components/GridImage.vue'
+import Menubar from '../components/Menubar.vue'
+import { GameContextTag } from '../composables/GameContext'
 import { useUrlState } from '../composables/UrlState'
+import { useWindowSize } from '../composables/WindowSize'
+import ConfirmDialog from './dialogs/ConfirmDialog.vue'
+import ExternalLink from './dialogs/ExternalLink.vue'
+import ModalDialog from './dialogs/ModalDialog.vue'
+import StyledImage from './StyledImage.vue'
 
 
 const { width, height } = useWindowSize()

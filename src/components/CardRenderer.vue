@@ -13,7 +13,6 @@ import { PlayingCard } from '../game/GameTypes';
 import { GameUtil } from '../game/GameUtil';
 
 
-
 const DRAG_LAYER = 1000
 
 const props = defineProps<{
@@ -96,7 +95,7 @@ const clazzes = computed(() => {
 
 const image = computed(() => {
     const reactiveCard = (GameUtil.findCardById(gameContext.state.value, GameUtil.cardId(card))!)
-    return reactiveCard.side == "back" ? "cards/back.png" : GameUtil.cardToImage(reactiveCard)
+    return reactiveCard.side == "back" ? "/vuesolitaire/cards/back.png" : GameUtil.cardToImage(reactiveCard)
 })
 
 
