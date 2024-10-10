@@ -19,7 +19,7 @@
                     :key="GameUtil.cardId(card)" 
                     :pile="getPile(card)!"
                     :card="card"
-                    :title="gameContext.state.value.status"
+                    :title="GameUtil.cardToString(card)"
                     :data-card="GameUtil.cardId(card)"
                     @click="clickHandler(getPile(card)!,card)">
                 </CardRenderer>
@@ -33,7 +33,7 @@
 import { computed, inject, provide, ref, toRefs, useTemplateRef } from 'vue';
 import { GameContextTag } from '../composables/GameContext';
 import { ClickHandler, RendererContextTag, useRendererContext } from '../composables/RendererContext';
-import { PlayingCard, Rank, Suit } from '../game/GameTypes';
+import { makeDeck, PlayingCard } from '../game/GameTypes';
 import { GameUtil } from '../game/GameUtil';
 import CardRenderer from './CardRenderer.vue';
 import PileRenderer from './PileRenderer.vue';
@@ -167,16 +167,8 @@ const getPile = (card: PlayingCard) => GameUtil.findPileForCard(gameContext.stat
 
 const cards = computed(() => {
     // stable deck basically
-    // this is currently not reactive
-    const suits: Suit[] = ["hearts", "diamonds", "clubs", "spades"]
-    const ranks: Rank[] = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
-    const deck: PlayingCard[] = []
-    for (const suit of suits) {
-        for (const rank of ranks) {
-            deck.push({ suit, rank, side: "back"})
-        }
-    }
-    return deck
+    // this is currently not reactive on purpose
+    return makeDeck()
 })
 
 </script>

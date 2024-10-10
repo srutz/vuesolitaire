@@ -1,5 +1,4 @@
 /* (c) Stepan Rutz 2024. All rights reserved. License under the WTFPL */
-import Pako from "pako"
 import { makeInitialState, Pile, PlayingCard, Rank, Side, SolitaireState, Suit } from "./GameTypes"
 import { GameUtil } from "./GameUtil"
 
@@ -215,44 +214,4 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
             throw new Error()
     }
 }
-
-
-/* convert a byte array to a url-safe string */
-function data2urlsafe(bytes: Uint8Array) {
-    let base64String = btoa(String.fromCharCode(...bytes))
-    base64String = base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-    return base64String
-}
-
-/* convert a url-safe string to a byte array */
-/*
-function urlsafe2data(base64String: string) {
-    base64String = base64String.replace(/-/g, '+').replace(/_/g, '/')
-    while (base64String.length % 4) {
-        base64String += '='
-    }
-    const binaryString = atob(base64String)
-    const bytes = new Uint8Array(binaryString.length)
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i)
-    }
-    return bytes
-}
-*/
-
-/* take the solitaire state and convert it to a url-safe string */
-export function stateToExternalForm(s: SolitaireState) {
-    const e = {
-        stock: s.stock,
-        waste: s.waste,
-        stacks: s.stacks,
-        tables: s.tables,
-        stats: s.stats,
-    }
-    const external = JSON.stringify(e)
-    const r = Pako.gzip(external)
-    const urldata = data2urlsafe(r)
-    return urldata
-}
-
 

@@ -42,10 +42,7 @@ export type SolitaireState = {
     tables: Pile[]   // 7 piles where cards are initially dealt.
 }
 
-
-
-/* Function to create the initial state of a Solitaire game. */
-export function makeInitialState() {
+export function makeDeck() {
     const suits: Suit[] = ["hearts", "diamonds", "clubs", "spades"]
     const ranks: Rank[] = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
@@ -55,7 +52,12 @@ export function makeInitialState() {
             deck.push({ suit, rank, side: "back"})
         }
     }
-    
+    return deck    
+}
+
+/* Function to create the initial state of a Solitaire game. */
+export function makeInitialState() {
+    const deck = makeDeck()
     Util.shuffle(deck)
 
     //console.log("init with " + deck.length + " cards")

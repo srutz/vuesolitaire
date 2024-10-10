@@ -4,12 +4,20 @@ import { useElementSize } from "./ElementSize"
 import { useWindowSize } from "./WindowSize"
 
 
+/* render context and utilities */
+
+export type Point = { x: number, y: number }
+
+export type Size = { width: number, height: number }
+
 export type Geometry = {
     scale: number
     xgap: number
     cardWidth: number
     cardHeight: number
 }
+
+export type ClickHandler = (pile: Pile, card?: PlayingCard) => void
 
 export function makeGeometry(scale: number) {
     return {
@@ -30,8 +38,6 @@ export function getStackingDistance(scale: number, pileType: PileType) {
     }
 }
 
-export type Point = { x: number, y: number }
-export type Size = { width: number, height: number }
 
 /* gets the left-top anchor position for a pile */
 export function getPilePosition(availableSize: Size, geometry: Geometry, pile: Pile) {
@@ -80,5 +86,4 @@ export function useRendererContext(elem: Ref<HTMLElement | null>) {
 export type RendererContextType = ReturnType<typeof useRendererContext>
 export const RendererContextTag = Symbol('RendererContextTag') as InjectionKey<RendererContextType>
 
-export type ClickHandler = (pile: Pile, card?: PlayingCard) => void
 

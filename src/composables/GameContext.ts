@@ -3,6 +3,7 @@ import { gameReducer } from "../game/Game"
 import { makeInitialState } from "../game/GameTypes"
 import { useReducer } from "./Reducer"
 
+/* game context lookup */
 export function useGameContext() {
     const r = useReducer(gameReducer, makeInitialState())
     return r

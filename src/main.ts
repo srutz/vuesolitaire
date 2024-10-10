@@ -12,6 +12,9 @@ console.log("%cVuesolitaire", "font-size:36px; color: #9c1020; font-Family: 'San
 console.log("%cwritten by Stepan Rutz. Source at https://github.com/srutz/vuesolitaire/", "font-size:18px; color: #9c1020; font-Family: 'Noto Sans'; font-weight: 700")
 
 
+// use this code to debug element changes in the dom
+// (if animations break)
+/*
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
@@ -32,3 +35,4 @@ observer.observe(document.body, {
     childList: true,
     subtree: true
 })
+*/

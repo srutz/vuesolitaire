@@ -15,17 +15,33 @@
             <div class="flex flex-col gap-2">
                 <p>Small Solitair Game in Vue. Cards are just divs, no Canvas used.</p>
                 <p>by Stepan Rutz <a href="mailto:stepan.rutz@gmx.de">stepan.rutz AT gmx.de</a>.</p>
-                <p>Projectpage incl. sourcecode <ExternalLink href="https://github.com/srutz/vuesolitaire/" />.</p>
+                <p>Projectpage incl. sourcecode <ExternalLink href="https://github.com/srutz/vuesolitaire/">https://github.com/srutz/vuesolitaire/</ExternalLink>.</p>
                 <div class="h-4"></div>
-                <p>Card-Images are are from <ExternalLink href="https://deckofcardsapi.com/"/></p>
+                <p>Card-Images are are from <ExternalLink href="https://deckofcardsapi.com/">https://deckofcardsapi.com/</ExternalLink></p>
                 <p>Made with: Typescript, Vue, Vite, Tailwind</p>
                 <div class="flex flex-col bg-black p-4 self-strecth items-center relative min-h-64">
-                    <div v-for="(card,index) in aboutCards" :key="index" class="w-32 absolute" :style="getAboutStyle(index)">
-                        <img draggable="false" class="select-none " :src="'cards/' + card + '.svg'" />
-                    </div>
+                    <StyledImage v-for="(card,index) in aboutCards" :key="index" :imageSource="'cards/' + card + '.svg'" :style="getAboutStyle(index)">
+                    </StyledImage>
                 </div>
             </div>
         </ModalDialog>
+        <ConfirmDialog
+                    :show="newGameConfirmShown"
+                    :onCancel="() => newGameConfirmShown = false"
+                    :onConfirm="confirmNewGame"
+                    title="Confirm New Game">
+                <p>Really start a new game?</p>
+            </ConfirmDialog>
+            <ConfirmDialog 
+                    :show="stopGameConfirmShown"
+                    :onCancel="() => stopGameConfirmShown = false"
+                    :onConfirm="() => {
+                        stopGameConfirmShown = false
+                        gameContext.dispatch({ type: 'game-stop' })
+                    }"
+                    title="Confirm Stop Game">
+                <p>Really end the current game?</p>
+            </ConfirmDialog>
     </div>
 </template>
 <script setup lang="ts">
@@ -34,29 +50,41 @@ import GameRenderer from '../components/GameRenderer.vue';
 import Menubar from '../components/Menubar.vue';
 import { GameContextTag } from '../composables/GameContext';
 import { useWindowSize } from '../composables/WindowSize';
+import ConfirmDialog from './dialogs/ConfirmDialog.vue';
 import ExternalLink from './dialogs/ExternalLink.vue';
 import ModalDialog from './dialogs/ModalDialog.vue';
+import StyledImage from './StyledImage.vue';
+import { useUrlState } from '../composables/UrlState'
+
 
 const { width, height } = useWindowSize()
 const gameContext = inject(GameContextTag)!
 
+useUrlState(gameContext)
+
 const aboutShown = ref(false)
+const newGameConfirmShown = ref(false)
+const stopGameConfirmShown = ref(false)
+
+const confirmNewGame = () => {
+    newGameConfirmShown.value = false
+    gameContext.dispatch({ type: 'game-stop' }) 
+    setTimeout(startNewGame, 500)
+}
 
 const handleMenubarAction = (action: string) => {
     if ("about" == action) {
         aboutShown.value = true
     } else if ("game-new" == action) {
         if (gameContext.state.value.status == "running") {
-            //setNewGameConfirmShown(true)
-            startNewGame()
+            newGameConfirmShown.value = true
         } else {
             startNewGame()
         }
     } else if ("game-stop" == action) {
         if (gameContext.state.value.status == "running") {
-            //setStopGameConfirmShown(true)
-            gameContext.dispatch({ type: "game-stop" })
-        } else {
+            stopGameConfirmShown.value = true
+        } else if (gameContext.state.value.status == "launching") {
             gameContext.dispatch({ type: "game-stop" })
         }
     }
@@ -75,20 +103,21 @@ const getAboutStyle = (index: number) => ({
     transform: "rotate(" + (angle.value * (index - aboutCards.length / 2)) + "deg)" } satisfies CSSProperties
 )
 
+/* simple animation */
 const aboutCards = [ "0H", "JS", "QD", "KH", "AS", "AD" ]
 const frame = ref(0)
 onMounted(() => {
     const i = setInterval(() => {
         if (frame.value == 0) {
             angle.value = 12
-        } else if (frame.value == 1) {
-            frame.value = 0
+        } else if (frame.value == 5) {
+            angle.value = 0
         }
         frame.value++
-        if (frame.value == 2) {
+        if (frame.value == 10) {
             frame.value = 0
         }
-    }, 1000)
+    }, 1_000)
     onUnmounted(() => clearInterval(i))
 })
 </script>
