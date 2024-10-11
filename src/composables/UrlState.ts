@@ -70,6 +70,8 @@ export function useUrlState(gameContext: GameContextType) {
                 restoringState.value = false
             }, 1)
         }
+    }, {
+        immediate: true
     }) /* careful here, this effect watches the searchParams */
 
 }

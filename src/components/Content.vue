@@ -11,7 +11,7 @@
             </div>
             <GameRenderer v-else ></GameRenderer>
 
-            <template v-if="gameContext.state.value.status == 'stopped'">
+            <template v-if="gameStopped">
                 <div class="top-0 bottom-0 right-0 left-0 insets-0 absolute bg-black opacity-40 flex flex-col justify-center items-center" >
                 </div>
                 <div class="top-0 bottom-0 right-0 left-0 insets-0 absolute bg-transparent flex flex-col justify-center items-center" >
@@ -19,6 +19,7 @@
                 </div>
             </template>
         </div>
+        <StatsPanel></StatsPanel>
         <ModalDialog :show="aboutShown" :onClose="() => aboutShown = false" title="About Vue-Solitaire">
             <div class="flex flex-col gap-2">
                 <p>Small Solitair Game in Vue. Cards are just divs, no Canvas used.</p>
@@ -54,7 +55,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { CSSProperties, inject, onMounted, onUnmounted, ref } from 'vue'
+import { computed, CSSProperties, inject, onMounted, onUnmounted, ref } from 'vue'
 import GameRenderer from '../components/GameRenderer.vue'
 import GridImage from '../components/GridImage.vue'
 import Menubar from '../components/Menubar.vue'
@@ -64,6 +65,7 @@ import { useWindowSize } from '../composables/WindowSize'
 import ConfirmDialog from './dialogs/ConfirmDialog.vue'
 import ExternalLink from './dialogs/ExternalLink.vue'
 import ModalDialog from './dialogs/ModalDialog.vue'
+import StatsPanel from './StatsPanel.vue'
 import StyledImage from './StyledImage.vue'
 
 
@@ -130,4 +132,9 @@ onMounted(() => {
     }, 1_000)
     onUnmounted(() => clearInterval(i))
 })
+const gameStopped = computed(() => {
+    return gameContext.state.value.status === "stopped"
+})
+
+
 </script>

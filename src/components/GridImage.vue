@@ -85,7 +85,7 @@ onMounted(() => {
     const timer = setInterval(() => {
         const newTiles = [...tiles.value]
         const order = Array.from(Array(tiles.value.length).keys()).map(i => i)
-        if (animationCounter.value % 3 != 0) {
+        if (animationCounter.value % 2 != 0) {
             Util.shuffle(order)
         }
         newTiles.forEach((tile, i) => {

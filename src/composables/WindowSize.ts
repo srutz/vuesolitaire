@@ -1,6 +1,5 @@
 import { onMounted, onUnmounted, ref, toRefs } from "vue"
 
-
 export type WindowSize = { width: number, height: number }
 
 /* Composable that tracks the window size */

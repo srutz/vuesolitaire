@@ -13,19 +13,14 @@
             <PileRenderer :pile="waste" :clickHandler="clickHandler" />
             <PileRenderer v-for="(pile,i) in stacks":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
             <PileRenderer v-for="(pile,i) in tables":key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
-
-            <KeepAlive>
-                <CardRenderer v-for="(card) in cards"
-                    :key="GameUtil.cardId(card)" 
-                    :pile="getPile(card)!"
-                    :card="card"
-                    :title="GameUtil.cardToString(card)"
-                    :data-card="GameUtil.cardId(card)"
-                    @click="clickHandler(getPile(card)!,card)">
-                </CardRenderer>
-            </KeepAlive>
-
-
+            <CardRenderer v-for="(card) in cards"
+                :key="GameUtil.cardId(card)" 
+                :pile="getPile(card)!"
+                :card="card"
+                :title="GameUtil.cardToString(card)"
+                :data-card="GameUtil.cardId(card)"
+                @click.prevent="clickHandler(getPile(card)!,card)">
+            </CardRenderer>
         </div>
     </div>
 </template>
@@ -149,7 +144,7 @@ const mouseMove = (event: MouseEvent | TouchEvent) => {
     }
 }
 
-const endDrag = () => {
+const endDrag = (event: MouseEvent | TouchEvent) => {
     if (draggedCard.value) {
         if (destinationPile.value?.type === "table") {
             gameContext?.dispatch({ type: "drop-table", cards: allDraggedCards.value, table: destinationPile.value })

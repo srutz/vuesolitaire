@@ -86,7 +86,7 @@ export type GameAction =
     ;
 
 export const gameReducer = (state: SolitaireState, action: GameAction) => {
-    //console.log("action: " + action.type)
+    console.log("action: " + action.type)
     switch (action.type) {
         case "game-new": {
             const s = makeInitialState()
@@ -116,6 +116,9 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
         }
         case "draw-stock": {
             const s = { ...state }
+            if (action.card) {
+                action.card = GameUtil.findCardById(state, GameUtil.cardId(action.card))!
+            }
             const stockIndex = s.stock.cards.findIndex(c => GameUtil.cardId(c) == GameUtil.cardId(action.card))
             let moveAllowed = false
             if (stockIndex != -1 && stockIndex == s.stock.cards.length - 1) {
@@ -141,6 +144,9 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
         }
         case "draw-waste": {
             const s = { ...state }
+            if (action.card) {
+                action.card = GameUtil.findCardById(state, GameUtil.cardId(action.card))!
+            }
             const wasteIndex = s.waste.cards.findIndex(c => GameUtil.cardId(c) == GameUtil.cardId(action.card))
             let moveAllowed = false
             if (wasteIndex != -1 && wasteIndex == s.waste.cards.length - 1) {
@@ -160,6 +166,9 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
         /* draw from a table, try to put "card" onto a stack if its the card's turn */
         case "draw-table": {
             const s = { ...state }
+            if (action.card) {
+                action.card = GameUtil.findCardById(state, GameUtil.cardId(action.card))!
+            }
             const table = GameUtil.findPileForCard(s, action.card)
             let moveAllowed = false
             if (table) {
@@ -171,14 +180,14 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
                         tableCard.side = "front"
                         s.stats.points += 10
                         moveAllowed = true
-                    } else if (action.side == "front") {
+                    } else if (tableCard.side == "front") {
                         /* try to put on stack */
                         const destinationStackIndex = suitToIndex(action.card.suit)
                         const destinationStack = s.stacks[destinationStackIndex]
                         moveAllowed = stackMoveAllowed(destinationStack, action.card)
                         if (moveAllowed) {
                             table.cards.splice(tableIndex, 1)
-                            destinationStack.cards.push(action.card)
+                            destinationStack.cards.push(tableCard)
                             //s.stats.points += 10
                         }
                     }
@@ -191,6 +200,10 @@ export const gameReducer = (state: SolitaireState, action: GameAction) => {
         case "drop-table": {
             console.assert(action.table?.type == "table", "drop-table: pile is not a table")
             const s = { ...state }
+            if (action.cards.length > 0) {
+                action.cards = action.cards.map(c => GameUtil.findCardById(state, GameUtil.cardId(c))!)
+            }
+            action.table = GameUtil.findPileById(s, GameUtil.pileId(action.table))!
             const card = action.cards[0]
             const pile = GameUtil.findPileForCard(s, card)
             let moveAllowed = false
