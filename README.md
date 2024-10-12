@@ -3,7 +3,7 @@
 
 # Live Game-Link
 
-https://srutz.github.io/reactsolitaire/
+https://srutz.github.io/vuesolitaire/
 
 # Tech used:
 
