@@ -3,10 +3,10 @@
         <Menubar @menuAction ="handleMenubarAction" />
         <div class="relative bg-indigo-800 h-1 grow shrink flex flex-col overflow-hidden">
             <div v-if="width < 820"
-                class="flex grow items-center justify-center text-center text-7xl font-bold p-4 text-white">Please use a
+                class="flex grow items-center justify-center text-center text-7xl bg-black font-bold p-4 text-white z-[1000]">Please use a
                 wider browser window</div>
             <div v-else-if="height < 640"
-                class="flex grow items-center justify-center text-center text-7xl font-bold p-4 text-white">Please use a
+                class="flex grow items-center justify-center text-center text-7xl bg-black font-bold p-4 text-white z-[1000]">Please use a
                 taller browser window
             </div>
             <GameRenderer v-else ></GameRenderer>
