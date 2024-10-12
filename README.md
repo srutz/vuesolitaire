@@ -1,5 +1,10 @@
 
-# Solitaire
+# VueSolitaire
+
+# Preview
+
+![preview](https://raw.githubusercontent.com/srutz/vuesolitaire/main/public/solitaire.gif)
+
 
 # Live Game-Link
 
