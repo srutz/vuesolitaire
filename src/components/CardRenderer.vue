@@ -65,15 +65,16 @@ const style = computed(() => {
         zIndex: zIndex
     }
     // if not dragged animate always
-    if (dragged.value) {
+    if (dragIndex != -1) {
         style.transitionProperty = "none"
+        style.zIndex = DRAG_LAYER + cardIndex
     } else {
         style.transitionProperty = "all"
         style.transitionDuration = "125ms"
         style.transitionTimingFunction = "ease-out"
     }
     if (releasingDrag.value) {
-        style.zIndex = DRAG_LAYER + cardIndex
+        //style.zIndex = DRAG_LAYER + cardIndex
         style.animation = "bounce 150ms ease-in-out"
     }
     return style
