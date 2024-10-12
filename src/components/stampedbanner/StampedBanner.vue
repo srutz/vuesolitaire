@@ -22,18 +22,9 @@ import "./StampedBanner.css";
 const { text } = defineProps<{ text: string }>()
 const texts = text.split("")
 
-//function useRerender() {
-//    const [, setToggle] = useState(false)
-//    return () => setToggle(t => !t)
-//}
-
-//const rerender = useRerender()
 const windowSize = useWindowSize()
 const elemRef = useTemplateRef<HTMLDivElement>("elemRef")
 
-//useEffect(() => {
-//    rerender()
-//}, [elemRef.current])
 const size = computed(() => windowSize.width.value < 1100 ? 100 : 160)
 
 function computePosition(i: number) {
