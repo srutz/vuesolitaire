@@ -47,9 +47,9 @@ const tileheight = height / rows
 const flipped = ref(false)
 const shortDelay = ref(true)
 const images = [
-    "https://images.pexels.com/photos//1679602/pexels-photo-1679602.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=1",
-    "https://images.pexels.com/photos/279009/pexels-photo-279009.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=1",
-    "https://images.pexels.com/photos/39018/cards-jass-cards-card-game-strategy-39018.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=1",
+    "/vuesolitaire/images/image1.jpg",
+    "/vuesolitaire/images/image2.jpg",
+    "/vuesolitaire/images/image3.jpg",
 ]
 const imageIndex = ref(1)
 const globalScale = computed(() => {

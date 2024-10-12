@@ -2,6 +2,18 @@
     <div v-if="text.trim().length > 0" class="stamped text-6xl font-bold flex flex-col justify-center items-center text-white"
             :style="style">{{text}}</div>
 </template>
+<style>
+.stamped {
+    position: absolute;
+    left: 200px;
+    top: 20px;
+    border-radius: 5px;
+    animation-duration: 0.5s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+    @apply bg-gray-700;
+}
+</style>
 <script setup lang="ts">
 import { computed, CSSProperties, onMounted, onUnmounted, ref } from 'vue';
 import { Point } from '../../composables/RendererContext';

@@ -18,6 +18,14 @@ Vue.js + TypeScript + Vite + Tailwind + React Router
 
 stepan.rutz AT gmx.de
 
+# Images
+
+Images are from https://pexels.com
+
+- https://www.pexels.com/photo/white-and-yellow-playing-cards-39018/
+- https://www.pexels.com/photo/playing-card-deck-58562/
+- https://www.pexels.com/photo/playing-cards-deck-279009/
+
 
 # License
 
