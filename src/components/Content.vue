@@ -18,8 +18,13 @@
                     <GridImage></GridImage>
                 </div>
             </template>
+            <StatsPanel></StatsPanel>
+            <div v-if="gameWon" class="inset-0 absolute flex flex-col items-center justify-center z-20">
+                <div class="absolute inset-0 bg-black opacity-60"></div>
+                <StampedBanner text="You Won!"></StampedBanner>
+                <div class="text-white text-4xl z-50 pt-16 tracking-tighter">Your score: {{ points }}, No of moves: {{ moves }}</div>
+            </div>
         </div>
-        <StatsPanel></StatsPanel>
         <ModalDialog :show="aboutShown" :onClose="() => aboutShown = false" title="About Vue-Solitaire">
             <div class="flex flex-col gap-2">
                 <p>Small Solitair Game in Vue. Cards are just divs, no Canvas used.</p>
@@ -65,6 +70,7 @@ import { useWindowSize } from '../composables/WindowSize'
 import ConfirmDialog from './dialogs/ConfirmDialog.vue'
 import ExternalLink from './dialogs/ExternalLink.vue'
 import ModalDialog from './dialogs/ModalDialog.vue'
+import StampedBanner from './stampedbanner/StampedBanner.vue'
 import StatsPanel from './StatsPanel.vue'
 import StyledImage from './StyledImage.vue'
 
@@ -132,9 +138,10 @@ onMounted(() => {
     }, 1_000)
     onUnmounted(() => clearInterval(i))
 })
-const gameStopped = computed(() => {
-    return gameContext.state.value.status === "stopped"
-})
+const gameStopped = computed(() => gameContext.state.value.status === "stopped")
+const gameWon = computed(() => gameContext.state.value.status === "won")
+const points = computed(() => gameContext.state.value.stats.points)
+const moves = computed(() => gameContext.state.value.stats.moves)
 
 
 </script>

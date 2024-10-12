@@ -1,6 +1,6 @@
 <template>
     <div class="h-1 grow shrink flex flex-col bg-gray-500 p-4 relative">
-        <div ref="elem" class="h-1 grow shrink flex flex-col bg-gray-500 p-4 relative" 
+        <div ref="elem" class="h-1 grow shrink flex flex-col p-4 relative" 
             @mousedown="mouseDown"
             @mousemove="mouseMove" 
             @mouseup="endDrag"
@@ -11,15 +11,15 @@
             @touchcancel="endDrag" >
             <PileRenderer :pile="stock" :clickHandler="clickHandler" />
             <PileRenderer :pile="waste" :clickHandler="clickHandler" />
-            <PileRenderer v-for="(pile,i) in stacks":key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
-            <PileRenderer v-for="(pile,i) in tables":key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
+            <PileRenderer v-for="(pile,i) in stacks" :key="'stack' + i" :pile="pile" :clickHandler="clickHandler" />
+            <PileRenderer v-for="(pile,i) in tables" :key="'tables' + i" :pile="pile" :clickHandler="clickHandler" />
             <CardRenderer v-for="(card) in cards"
                 :key="GameUtil.cardId(card)" 
                 :pile="getPile(card)!"
                 :card="card"
                 :title="GameUtil.cardToString(card)"
                 :data-card="GameUtil.cardId(card)"
-                @click.prevent="clickHandler(getPile(card)!,card)">
+                @click="clickHandler(getPile(card)!,card)">
             </CardRenderer>
         </div>
     </div>
@@ -38,6 +38,7 @@ import PileRenderer from './PileRenderer.vue';
 const elemRef = useTemplateRef('elem')
 const rendererContext = useRendererContext(elemRef)
 provide(RendererContextTag, rendererContext)
+const ignoreClick = ref(false)
 
 /* get game context */
 const gameContext = inject(GameContextTag)!
@@ -45,6 +46,9 @@ const { stock, waste, stacks, tables } = toRefs(gameContext.state.value)
 
 /* game clicks */
 const clickHandler: ClickHandler = (pile, card) => {
+    if (ignoreClick.value) {
+        return
+    }
     if (card && pile.type === "stock") {
         gameContext.dispatch({ type: "draw-stock", card: card })
     } else if (!card && pile.type === "stock") {
@@ -64,6 +68,7 @@ const downPosition = ref({ x: 0, y: 0 })
 const { dragPosition, draggedCard, allDraggedCards, destinationPile } = rendererContext
 
 const mouseDown = (event: MouseEvent|TouchEvent) => {
+    ignoreClick.value = false
     const container = elemRef.value
     if (container == event.target) {
         return
@@ -144,10 +149,19 @@ const mouseMove = (event: MouseEvent | TouchEvent) => {
     }
 }
 
-const endDrag = (event: MouseEvent | TouchEvent) => {
+const endDrag = () => {
+    // have to ignore the next click event
+    ignoreClick.value = false  
     if (draggedCard.value) {
         if (destinationPile.value?.type === "table") {
-            gameContext?.dispatch({ type: "drop-table", cards: allDraggedCards.value, table: destinationPile.value })
+            const currentPile = GameUtil.findPileForCard(gameContext.state.value, draggedCard.value)
+            const currentPileId = GameUtil.pileId(currentPile!)
+            const destinationPileId = GameUtil.pileId(destinationPile.value)
+            console.log("currentPileId", currentPileId, "destinationPileId", destinationPileId)
+            if (currentPileId !== destinationPileId) {
+                gameContext?.dispatch({ type: "drop-table", cards: allDraggedCards.value, table: destinationPile.value })
+                ignoreClick.value = true
+            }
         }
     }
     draggedCard.value = undefined

@@ -36,8 +36,10 @@ const style = computed(() => {
     const reactivePile = GameUtil.findPileForCard(gameContext.state.value, reactiveCard)!
     const cardIndex = GameUtil.indexOfCard(reactivePile.cards, reactiveCard)
     const dragIndex = GameUtil.indexOfCard(allDraggedCards.value, card)
-    if (status == "stopped" || status == "won") {
+    if (status == "stopped" ) {
         position = { x: -300, y: -300 }
+    } else if (status == "won") {
+        position = { x: window.innerWidth + 300, y: -300 }
     } else if (dragIndex == -1) {
         position = getPilePosition(availableSize.value, geometry.value, reactivePile)
         position.y = position.y + cardIndex * getStackingDistance(geometry.value.scale, reactivePile.type)
