@@ -1,5 +1,5 @@
 <template>
-    <div class="gridcontainer" :style="styleContainer()">
+    <div class="gridcontainer" :style="styleContainer">
         <div v-for="(tile) in tiles" :key="tile.id" :data-id="tile.id" class="gridtile rounded-sm" :style="styleTile(tile)" ></div>
     </div>
 </template>
@@ -21,9 +21,11 @@
 </style>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, type CSSProperties } from 'vue';
+import { computed, onMounted, onUnmounted, ref, type CSSProperties } from 'vue';
+import { useWindowSize } from '../composables/WindowSize';
 import { Util } from '../game/Util';
 
+const { width: windowWidth, height: windowHeight } = useWindowSize()
 
 const mounted = ref(false)
 
@@ -50,6 +52,13 @@ const images = [
     "https://images.pexels.com/photos/39018/cards-jass-cards-card-game-strategy-39018.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&dpr=1",
 ]
 const imageIndex = ref(1)
+const globalScale = computed(() => {
+    let scale = Math.min(windowWidth.value / width, windowHeight.value / height) * 0.75
+    console.log("scale", Math.min(windowWidth.value / width, windowHeight.value / height), width)
+    //scale = Math.max(1, scale)
+    return scale 
+})
+
 
 /* make the tiles */
 const tiles = ref(Array.from(Array(rows * cols).keys()).map(i => (
@@ -82,13 +91,14 @@ const styleTile = (tile: Tile) => {
 }
 
 /* get the style for the container */
-const styleContainer = () => {
+const styleContainer = computed(() => {
     return {
         width: (width + (cols - 1) * gap.value) + 'px',
         height: (height + (rows - 1) * gap.value) + 'px',
         gap: gap + 'px',
+        transform: `scale(${globalScale.value})`,
     } satisfies CSSProperties
-}
+})
 
 const animationCounter = ref(0)
 onMounted(() => {
@@ -110,7 +120,7 @@ onMounted(() => {
             flipped.value = false
             shortDelay.value = true
             Util.shuffleRows(order)
-            gap.value= 12
+            gap.value= 9
         }
         newTiles.forEach((tile, i) => {
             tile.order = order[i]
