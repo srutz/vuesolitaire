@@ -12,7 +12,7 @@ https://srutz.github.io/vuesolitaire/
 
 # Tech used:
 
-Vue.js + TypeScript + Vite + Tailwind + React Router
+Vue.js + TypeScript + Vite + Tailwind + Vue Router
 
 # Author
 
